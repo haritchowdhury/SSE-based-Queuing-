@@ -1,0 +1,35 @@
+// prisma/schema.prisma - Database schema example
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql" // or "mysql", "sqlite", etc.
+  url      = env("DATABASE_URL")
+}
+
+model MatchmakingQueue {
+  id          String   @id @default(cuid())
+  playerId    String   @unique
+  playerName  String
+  skillLevel  Int      @default(1000)
+  status      String   @default("searching") // searching, matched, cancelled
+  matchId     String?
+  createdAt   DateTime @default(now())
+  matchedAt   DateTime?
+  
+  @@index([status, skillLevel, createdAt])
+}
+
+model Match {
+  id        String   @id @default(cuid())
+  matchId   String   @unique
+  player1Id String
+  player2Id String
+  status    String   @default("active") // active, completed, cancelled
+  startedAt DateTime @default(now())
+  endedAt   DateTime?
+  
+  @@index([matchId])
+}
+
